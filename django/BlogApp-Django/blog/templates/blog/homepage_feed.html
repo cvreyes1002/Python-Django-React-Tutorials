@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Blog App{% endblock title %}
+
+{% block content %}
+{% include "blog/includes/header.html" %}
+{% if messages %}
+  {% for message in messages %}
+    <div class="container container--narrow">
+    {% if message.tags == "success" %}
+      <div class="alert alert-success text-center">
+    {% elif message.tags == "error" %}
+      <div class="alert alert-danger text-center">
+    {% endif %}
+    {{ message }}
+    </div>
+  {% endfor %}
+{% endif %}
+    <div class="container py-md-5 container--narrow">
+      {% if page_obj %}
+        <h2 class="text-center mb-4">The Latest from the People You Follow</h2>
+        <div class="list-group">
+          {% for post in page_obj %}
+            <a href="/post/{{ post.pk }}" class="list-group-item list-group-item-action">
+              <img class="avatar-tiny" src="{{ avatar_url }}" />
+              <strong>{{ post.title }}</strong> <span class="text-muted small">by {{ post.user.first_name }} on {{ post.created_at|date:"m/d/Y" }}</span>
+            </a>
+          {% empty %}
+            <p class="text-center">No posts to display.</p>
+          {% endfor %}
+        </div>
+
+        <div class="mt-4 pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+{% comment %} 
+        <div class="mt-4 pagination">
+          {% if page_obj.has_previous %}
+              <a href="?page=1">First</a>
+              <a href="?page={{ page_obj.previous_page_number }}">
+                  Previous
+              </a>
+          {% endif %}
+        <span> Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} </span>
+
+          {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}">Next</a>
+              <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+          {% endif %}
+        </div>
+ {% endcomment %}
+        {% else %}
+        <div class="container py-md-5 container--narrow">
+          <div class="text-center">
+            <h2>Hello <strong>{{ first_name }}</strong>, your feed is empty.</h2>
+            <p class="lead text-muted">Your feed displays the latest posts from the people you follow. If you don&rsquo;t have any friends to follow that&rsquo;s okay; you can use the &ldquo;Search&rdquo; feature in the top menu bar to find content written by people with similar interests and then follow them.</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+{% include "blog/includes/footer.html" %}
+{% endblock content %}
+

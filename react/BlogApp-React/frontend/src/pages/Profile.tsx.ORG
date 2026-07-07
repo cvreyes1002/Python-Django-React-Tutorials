@@ -1,0 +1,156 @@
+import { Link } from "react-router";
+import { useAuth } from "../components/ProtectedRoute";
+import { useParams } from "react-router-dom";
+
+import Navbar from "../components/Navbar";
+import api from "../api";
+import { ACCESS_TOKEN } from "../constants";
+import axios from "axios";
+
+interface UserProfile {
+  id: number;
+  first_name: string;
+  avatar: string;
+}
+
+// const fetchUserProfile = async (userId: number, token: string | null): Promise<UserProfile> => {
+//   try {
+//     // const response = await api.get(`/api/user/${numericId}/`, {headers: {Authorization: `Bearer ${token}`, },});
+//     const response = await axios.get(`http://127.0.0.1:8000/api/user/${userId}/`, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+//     console.log("Fetched user profile data:", response.data);
+//     return response.data;
+//   } catch (error) {
+//     console.error("Error fetching user profile:", error);
+//     throw error;
+//   }
+// };
+
+const Profile = async () => {
+  const { user } = useAuth() as { user: UserProfile };
+  const { id } = useParams<{ id: string }>(); // Get the user ID from the URL parameters
+  const token = localStorage.getItem(ACCESS_TOKEN);
+
+  const numericId = Number(id); // Convert the id from string to number for comparison
+  console.log("Profile component rendered. Logged-in user:", user.id, "Profile ID from URL:", id);
+
+  if (user.id !== numericId) {
+    try {
+      // const response = await api.get(`/api/user/${numericId}/`, {headers: {Authorization: `Bearer ${token}`, },});
+      const response = await axios.get(`http://127.0.0.1:8000/api/user/${numericId}/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("Fetched user profile data:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      throw error;
+    }
+
+    // const response1 = await fetchUserProfile(numericId, token);
+    // console.log("Fetched user profile data from fetchUserProfile:", response1.data);
+
+    // const response = api.get(`/api/user/${numericId}/`, {
+    //   headers: { Authorization: `Bearer ${token}` },
+    // });
+  }
+
+  return (
+    <>
+      <Navbar />
+      <div className="container mx-auto px-4 py-6 md:py-12 max-w-2xl">
+        {/* Header Section */}
+        <h2 className="flex items-center text-2xl font-bold mb-4">
+          <img
+            className="w-8 h-8 rounded-full mr-2"
+            src={`http://127.0.0.1:8000${user?.avatar || "/uploads/avatars/images.webp"}`}
+            alt="brad"
+          />
+          <span className="capitalize">{user?.first_name}</span>
+
+          <Link
+            to="/manage-avatar"
+            className="ml-2 inline-block"
+            action="#"
+            method="POST"
+          >
+            <button className="px-3 py-1.5 text-sm font-medium text-white bg-gray-600 hover:bg-gray-700 rounded transition-colors duration-200">
+              Manage Avatar
+            </button>
+            {/* Unfollow button alternative:
+            <button className="bg-red-600 hover:bg-red-700 text-white text-sm font-medium py-1 px-3 rounded shadow transition duration-150 ease-in-out">
+              Stop Following <span className="ml-1">✕</span>
+            </button> 
+            */}
+          </Link>
+        </h2>
+
+        {/* Navigation Tabs */}
+        <div className="flex border-b border-gray-200 pt-2 mb-4">
+          <a
+            href="#"
+            className="py-2 px-4 text-gray-600 hover:text-blue-600 border-b-2 border-transparent hover:border-gray-300 transition duration-150"
+          >
+            Posts: 3
+          </a>
+          <a
+            href="#"
+            className="py-2 px-4 text-blue-600 font-medium border-b-2 border-blue-600 active"
+          >
+            Followers: 3
+          </a>
+          <a
+            href="#"
+            className="py-2 px-4 text-gray-600 hover:text-blue-600 border-b-2 border-transparent hover:border-gray-300 transition duration-150"
+          >
+            Following: 2
+          </a>
+        </div>
+
+        {/* List Group */}
+        <div className="flex flex-col border border-gray-200 rounded-md overflow-hidden shadow-sm">
+          <a
+            href="#"
+            className="flex items-center px-4 py-3 border-b border-gray-200 bg-white hover:bg-gray-50 text-gray-700 transition duration-150 last:border-b-0"
+          >
+            <img
+              className="w-6 h-6 rounded-full mr-3"
+              src="https://gravatar.com/avatar/b9216295c1e3931655bae6574ac0e4c2?s=128"
+              alt="User 1"
+            />
+            <span>User 1</span>
+          </a>
+          <a
+            href="#"
+            className="flex items-center px-4 py-3 border-b border-gray-200 bg-white hover:bg-gray-50 text-gray-700 transition duration-150 last:border-b-0"
+          >
+            <img
+              className="w-6 h-6 rounded-full mr-3"
+              src="https://gravatar.com/avatar/b9216295c1e3931655bae6574ac0e4c2?s=128"
+              alt="User 2"
+            />
+            <span>User 2</span>
+          </a>
+          <a
+            href="#"
+            className="flex items-center px-4 py-3 bg-white hover:bg-gray-50 text-gray-700 transition duration-150"
+          >
+            <img
+              className="w-6 h-6 rounded-full mr-3"
+              src="https://gravatar.com/avatar/b9216295c1e3931655bae6574ac0e4c2?s=128"
+              alt="User 3"
+            />
+            <span>User 3</span>
+          </a>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Profile;

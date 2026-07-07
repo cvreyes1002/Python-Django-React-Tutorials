@@ -1,0 +1,11 @@
+# Build an image from a Dockerfile
+> docker build -t ubuntu-server:26.04 .
+
+# Create and RUN a docker container
+> docker run -it --name django-react --user creyes ubuntu-server:26.04 /bin/bash
+
+# Start an already existing container container
+> docker start django-react
+
+# Start a terminal on a container already running in the background
+> docker exec -it --user creyes django-react /bin/bash

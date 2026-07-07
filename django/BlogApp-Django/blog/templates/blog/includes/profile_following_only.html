@@ -1,0 +1,9 @@
+<div class="list-group">
+    {% block list %}{% endblock list %}
+{% for following in following %}
+  <a href="/profile/{{ following.following.id }}/" class="list-group-item list-group-item-action">
+    <img class="avatar-tiny" src="{{ following.following.profile.avatar.url }}" />
+    <strong>{{ following.following.first_name }} {{ following.following.last_name }}</strong>
+  </a>
+{% endfor %}
+</div>

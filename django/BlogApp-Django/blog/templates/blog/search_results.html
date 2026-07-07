@@ -1,0 +1,14 @@
+<h1>Search Results</h1>
+
+{% if query %}
+    <p>Results for "{{ query }}"</p>
+
+    {% for post in page_obj %}
+        <article>
+            <h2>{{ post.title }}</h2>
+            <p>{{ post.body|truncatewords:30 }}</p>
+        </article>
+    {% empty %}
+        <p>No posts found.</p>
+    {% endfor %}
+{% endif %}

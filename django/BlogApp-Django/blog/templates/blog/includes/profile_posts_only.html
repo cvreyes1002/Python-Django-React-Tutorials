@@ -1,0 +1,8 @@
+<div class="list-group">
+{% for post in posts %}
+  <a href="/post/{{ post.pk }}" class="list-group-item list-group-item-action">
+    <img class="avatar-tiny" src="{{ avatar_url }}" />
+    <strong>{{ post.title }}</strong> on {{ post.created_at|date:"m/d/Y" }}
+  </a>
+{% endfor %}
+</div>

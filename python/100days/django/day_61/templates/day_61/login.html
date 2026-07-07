@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+
+<html>
+	<head>
+		<title>Login</title>
+	</head>
+	<body>
+        <div class="container">
+		<h1>Login</h1>
+        <!-- This is where our form will go. -->
+		 <form action="" method="POST">
+			{% csrf_token %}
+			{{ form.email_address.label_tag }}
+			{{ form.email_address }}
+			{{ form.email_address.errors }}
+			{{ form.password.label_tag }}
+			{{ form.password }}
+			{{ form.password.errors }}
+			{% comment %} <label for="email">Email</label>
+			<input id="username" name="username" type="text">
+			<label for="password">Password</label>
+			<input id="password" name="password" type="text"> {% endcomment %}
+			<button type="submit">Send</button>
+		 </form>
+        </div>
+	</body>
+</html>

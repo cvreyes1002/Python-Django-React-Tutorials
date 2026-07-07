@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% comment %} {% load rules %} {% endcomment %}
+
+{% block title %}{{ post.title }}{% endblock title %}
+
+{% block content %}
+{% include "blog/includes/header.html" %}
+    <div class="container py-md-5 container--narrow">
+      <div class="d-flex justify-content-between">
+        <h2>{{ post.title }}</h2>
+          {% comment %} {% has_perm "blog.delete_post" user post as can_delete %} {% endcomment %}
+          {% if can_edit %}
+            <span class="pt-2">
+              <a href="/post/{{ post.id }}/edit/" class="text-primary mr-2" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fas fa-edit"></i></a>
+              <form class="delete-post-form d-inline" action="/post/delete/{{ post.id }}/" method="POST">
+                {% csrf_token %}
+                <button class="delete-post-button text-danger" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fas fa-trash"></i></button>
+              </form>
+            </span>
+          {% endif %}
+      </div>
+      <p class="text-muted small mb-4">
+        <a href="/profile/{{ user_id }}/"><img class="avatar-tiny" src="{{ avatar_url }}" /></a>
+        Posted by <a href="/profile/{{ user_id }}/">{{ first_name }} {{ last_name }}</a> on {{ post.created_at|date:"m/d/Y" }}
+      </p>
+
+      <div class="body-content">
+        {{ post.body }}
+      </div>
+    </div>
+
+{% include "blog/includes/footer.html" %}
+{% endblock content %}

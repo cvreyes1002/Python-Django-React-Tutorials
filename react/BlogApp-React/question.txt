@@ -1,0 +1,1 @@
+Is there a global variable in react js? Is it possible to always have access to the primary key id of the currently logged in user?

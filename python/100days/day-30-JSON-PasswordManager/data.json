@@ -1,0 +1,18 @@
+{
+    "aaa": {
+        "email": "sample@email.com",
+        "password": "aaa"
+    },
+    "bbb": {
+        "email": "sample@email.com",
+        "password": "bbb"
+    },
+    "ccc": {
+        "email": "sample@email.com",
+        "password": "ccc"
+    },
+    "amazon": {
+        "email": "sample@email.com",
+        "password": "aaaaa"
+    }
+}
