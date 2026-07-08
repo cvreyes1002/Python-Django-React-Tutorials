@@ -1,18 +1,19 @@
-import { Navigate } from "react-router-dom"
+import { Navigate, Outlet } from "react-router-dom"
 import { jwtDecode } from "jwt-decode"
 import api from "../api"
 import { REFRESH_TOKEN, ACCESS_TOKEN, USER_ID } from "../constants"
 import { useState, useEffect, type ReactNode, createContext, useContext } from "react"
 import axios from "axios"
 
-interface ProtectedRouteProps {
-  children: ReactNode
-}
+// interface ProtectedRouteProps {
+//   children: ReactNode
+// }
 
 // 1. Create the context container
 const AuthContext = createContext(null);
 
-export function ProtectedRoute({ children }: ProtectedRouteProps) {
+// export function ProtectedRoute({ children }: ProtectedRouteProps) {
+export const ProtectedRoute = () => {
   const [user, setUser] = useState(null);
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
@@ -84,7 +85,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   return (
     isAuthorized ? (
       <AuthContext.Provider value={{ user }}>
-        {children}
+        <Outlet />
       </AuthContext.Provider>
     ) : (
       <Navigate to="/login" />

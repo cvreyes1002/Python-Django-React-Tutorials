@@ -6,6 +6,8 @@ import TopPage from "./pages/TopPage";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import AvatarUploadForm from "./pages/AvatarUploadForm";
+import CreatePost from "./pages/CreatePost";
+
 // import { useEffect } from "react";
 
 function Logout() {
@@ -22,14 +24,14 @@ function Logout() {
 const App = () => {
 
   return (
-    // Fixed-width??
-    // <div className="w-full min-h-screen bg-gray-100">
-    //   <div className="w-full max-w-7xl mx-auto bg-white min-h-screen p-6 shadow-md">
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-        <Route path="/profile/:id" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-        <Route path="/manage-avatar" element={<ProtectedRoute><AvatarUploadForm /></ProtectedRoute>} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/manage-avatar" element={<AvatarUploadForm />} />
+          <Route path="/create-post" element={<CreatePost />} />
+        </Route>
         <Route path="/login" element={<TopPage />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="*" element={<NotFound />} />
