@@ -1,4 +1,4 @@
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -10,7 +10,8 @@ from .serializers import (
     PostSerializer,
 )
 from django.contrib.auth import get_user_model
-from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import RetrieveAPIView, CreateAPIView
+from .models import Post
 
 User = get_user_model()
 
@@ -21,19 +22,14 @@ class UserDetailView(RetrieveAPIView):
     serializer_class = UserSerializer
 
 
-class CreatePostView(APIView):
+class CreatePostView(CreateAPIView):
+    # queryset = Post.objects.all().order_by("-created_at")
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
-        serializer = PostSerializer(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                {"message": "User registered successfully!"},
-                status=status.HTTP_201_CREATED,
-            )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
 
 class RegisterView(APIView):
@@ -52,9 +48,7 @@ class RegisterView(APIView):
 
 
 class CurrentUserView(APIView):
-    permission_classes = [
-        IsAuthenticated
-    ]  # Adjust this based on your authentication needs
+    permission_classes = [IsAuthenticated] 
 
     def get(self, request):
         serializer = UserSerializer(request.user, context={"request": request})

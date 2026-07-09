@@ -13,16 +13,16 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = ("email", "password", "first_name", "last_name", "avatar")
 
-    def create(self, validated_data):
-        # Your CustomUserManager handles everything seamlessly here
-        user = User.objects.create_user(
-            email=validated_data["email"],
-            password=validated_data["password"],
-            first_name=validated_data.get("first_name", ""),
-            last_name=validated_data.get("last_name", ""),
-            # avatar=validated_data.get("avatar", None),
-        )
-        return user
+    # def create(self, validated_data):
+    #     # Your CustomUserManager handles everything seamlessly here
+    #     user = User.objects.create_user(
+    #         email=validated_data["email"],
+    #         password=validated_data["password"],
+    #         first_name=validated_data.get("first_name", ""),
+    #         last_name=validated_data.get("last_name", ""),
+    #         # avatar=validated_data.get("avatar", None),
+    #     )
+    #     return user
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -41,18 +41,14 @@ class AvatarSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
+    # author_details = UserSerializer(source="author", read_only=True)
+
     class Meta:
         model = Post
-        fields = ("title", "content", "created_at", "author")
-        read_only_fields = (
-            "author",
-        )
-
-
-        # # We should be able to read who the author is,
-        # # ..but should not be able to write who the author is
-        # extra_kwargs = {"author": {"read_only": True}}
-
+        # fields = ("id", "title", "content", "author", "author_details", "created_at", "updated_at")
+        fields = ("id", "title", "content", "author_id", "created_at", "updated_at")
+        read_only_fields = ("author_id", "created_at", "updated_at")
+  
 
 ###########################
 # Original - From Tutorial
