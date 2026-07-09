@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from .models import Post
 
 User = get_user_model()
 
@@ -37,6 +38,20 @@ class AvatarSerializer(serializers.ModelSerializer):
         read_only_fields = (
             "id",
         )  # Prevents changing id during avatar upload
+
+
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ("title", "content", "created_at", "author")
+        read_only_fields = (
+            "author",
+        )
+
+
+        # # We should be able to read who the author is,
+        # # ..but should not be able to write who the author is
+        # extra_kwargs = {"author": {"read_only": True}}
 
 
 ###########################

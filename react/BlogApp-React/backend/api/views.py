@@ -3,7 +3,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
-from .serializers import RegisterSerializer, UserSerializer, AvatarSerializer
+from .serializers import (
+    RegisterSerializer,
+    UserSerializer,
+    AvatarSerializer,
+    PostSerializer,
+)
 from django.contrib.auth import get_user_model
 from rest_framework.generics import RetrieveAPIView
 
@@ -11,15 +16,24 @@ User = get_user_model()
 
 
 class UserDetailView(RetrieveAPIView):
-    # print("UserDetailView initialized.")
-
+    permission_classes = [IsAuthenticated]
     queryset = User.objects.all()
-    # print("UserDetailView queryset:", queryset)
     serializer_class = UserSerializer
-    permission_classes = [
-        IsAuthenticated
-    ]  # Adjust this based on your authentication needs
 
+
+class CreatePostView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = PostSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"message": "User registered successfully!"},
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class RegisterView(APIView):
@@ -43,7 +57,7 @@ class CurrentUserView(APIView):
     ]  # Adjust this based on your authentication needs
 
     def get(self, request):
-        serializer = UserSerializer(request.user, context={'request': request})
+        serializer = UserSerializer(request.user, context={"request": request})
         return Response(serializer.data)
 
 
@@ -53,13 +67,10 @@ class ImageUploadView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        print("Request data:", request.data)
-
         serializer = AvatarSerializer(
             request.user, data=request.data, partial=True
         )  # partial=True allows updating only the avatar field
         if serializer.is_valid():
-            print("Serializer is valid. Saving avatar...")
             serializer.save()
             return Response(
                 {"message": "Avatar uploaded successfully!"}, status=status.HTTP_200_OK

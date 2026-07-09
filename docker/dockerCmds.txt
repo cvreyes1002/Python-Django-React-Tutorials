@@ -2,10 +2,13 @@
 > docker build -t ubuntu-server:26.04 .
 
 # Create and RUN a docker container
-> docker run -it --name django-react --user creyes ubuntu-server:26.04 /bin/bash
+> docker run -it --name [container-name] --user creyes ubuntu-server:26.04 /bin/bash
+
+# Create and RUN a docker container and publish a container's port to the host
+> docker run -p 9000:8000 -it --name [container-name] --user creyes ubuntu-server:26.04 /bin/bash
 
 # Start an already existing container container
-> docker start django-react
+> docker start [container-name]
 
 # Start a terminal on a container already running in the background
-> docker exec -it --user creyes django-react /bin/bash
+> docker exec -it --user creyes [container-name] /bin/bash

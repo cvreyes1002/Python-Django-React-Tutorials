@@ -31,12 +31,9 @@ const Navbar = () => {
               src={ user?.avatar }
             />
           </Link>
-          <a
-            className="bg-green-600 hover:bg-green-700 text-white text-sm py-1 px-3 rounded mr-2"
-            href="#"
-          >
+          <Link to="/create-post" className="bg-green-600 hover:bg-green-700 text-white text-sm py-1 px-3 rounded mr-2" >
             Create Post
-          </a>
+          </Link>
           <Link to="/logout" className="bg-gray-600 hover:bg-gray-700 text-white text-sm py-1 px-3 rounded">
               Sign Out
           </Link>
@@ -47,3 +44,12 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+
+
+          // <a
+          //   className="bg-green-600 hover:bg-green-700 text-white text-sm py-1 px-3 rounded mr-2"
+          //   href="#"
+          // >
+          //   Create Post
+          // </a>
