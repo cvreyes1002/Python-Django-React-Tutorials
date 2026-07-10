@@ -32,7 +32,7 @@ const App = () => {
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/manage-avatar" element={<AvatarUploadForm />} />
           <Route path="/create-post" element={<CreatePost />} />
-          <Route path="/post/:id" element={<SinglePost />} />
+          <Route path="/post/:postId" element={<SinglePost />} />
         </Route>
         <Route path="/login" element={<TopPage />} />
         <Route path="/logout" element={<Logout />} />

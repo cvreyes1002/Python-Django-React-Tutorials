@@ -4,7 +4,6 @@ import { ACCESS_TOKEN } from "../constants";
 import { Link } from "react-router";
 import api from "../api";
 
-
 interface UserProfile {
   id: number;
   first_name: string;
@@ -12,7 +11,6 @@ interface UserProfile {
 }
 
 const ProfileHeader = ({ userId }: { userId: number }) => {
-
   const { user: currentUser } = useAuth() as { user: UserProfile };
 
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -21,22 +19,24 @@ const ProfileHeader = ({ userId }: { userId: number }) => {
 
   const token = localStorage.getItem(ACCESS_TOKEN);
 
-  const isCurrentUser = userId === currentUser?.id;
+  const isCurrentUser = userId === currentUser.id;
 
-  useEffect( () => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`/api/user/${userId}/`, {headers: {Authorization: `Bearer ${token}`, },});
+        const response = await api.get(`/api/user/${userId}/`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setUserProfile(response.data);
       } catch (err) {
-        setError(err.message || "Something went wrong.")
+        setError(err.message || "Something went wrong.");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     };
-
     fetchData();
+
   }, [userId, token]);
 
   if (loading) return <div>Loading...</div>;
@@ -62,10 +62,10 @@ const ProfileHeader = ({ userId }: { userId: number }) => {
 
   return (
     <h2 className="flex items-center text-2xl font-bold tracking-tight text-gray-900 md:text-3xl">
-      <img 
+      <img
         className="h-8 w-8 rounded-full md:h-12 md:w-12"
         src={profileToDisplay?.avatar}
-        alt="Avatar" 
+        alt="Avatar"
       />
       <span className="capitalize">{profileToDisplay?.first_name}</span>
 
@@ -76,7 +76,7 @@ const ProfileHeader = ({ userId }: { userId: number }) => {
           </button>
         </Link>
       ) : (
-        <button 
+        <button
           onClick={handleFollowSubmit}
           className="ml-2 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded transition-colors duration-200"
         >
@@ -84,7 +84,7 @@ const ProfileHeader = ({ userId }: { userId: number }) => {
         </button>
       )}
     </h2>
-  )
-}
+  );
+};
 
-export default ProfileHeader
+export default ProfileHeader;

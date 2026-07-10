@@ -22,6 +22,12 @@ class UserDetailView(RetrieveAPIView):
     serializer_class = UserSerializer
 
 
+class ShowPostView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+
 class CreatePostView(CreateAPIView):
     # queryset = Post.objects.all().order_by("-created_at")
     queryset = Post.objects.all()

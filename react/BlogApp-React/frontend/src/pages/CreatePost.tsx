@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import api from "../api";
 
@@ -10,6 +11,7 @@ const CreatePost = () => {
   });
   const [errors, setErrors] = useState(null);
   const [success, setSuccess] = useState(false)
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -34,6 +36,7 @@ const CreatePost = () => {
       if (response.status === 201) {
         setSuccess(true);
         setFormData({ title: '', content: '' });  // Clear out the form fields on success
+        navigate(`/post/${response.data.id}`)
       }
     } catch (err) {
       // Axios catches any response outside the 2xx range in the catch block

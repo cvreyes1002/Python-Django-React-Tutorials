@@ -36,6 +36,7 @@ const Profile = () => {
   const { id } = useParams<{ id: string }>(); // Get the user ID from the URL parameters
 
   const numericId = Number(id); // Convert the id from string to number for comparison
+  console.log(`Numeric ID: ${numericId}`)
   // console.log("Profile component rendered. Logged-in user:", user.id, "Profile ID from URL:", id);
 
   // const { user } = useAuth() as { user: UserProfile };
