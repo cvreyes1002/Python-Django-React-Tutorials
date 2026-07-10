@@ -25,9 +25,10 @@ const ProfileHeader = ({ userId }: { userId: number }) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`/api/user/${userId}/`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await api.get(`/api/user/${userId}/`);
+        // const response = await api.get(`/api/user/${userId}/`, {
+        //   headers: { Authorization: `Bearer ${token}` },
+        // });
         setUserProfile(response.data);
       } catch (err) {
         setError(err.message || "Something went wrong.");
