@@ -6,6 +6,7 @@ import { ACCESS_TOKEN } from "../constants";
 import api from "../api";
 import { useParams } from "react-router-dom";
 import { format } from "date-fns";
+import { jwtDecode } from "jwt-decode"
 
 // export default function PostContainer() {
 //   // Optional: Handle delete form submission
@@ -27,16 +28,18 @@ interface UserProfile {
   id: number;
   first_name: string;
   last_name: string;
+  avatar: string;
 }
 
 const SinglePost = () => {
   const { postId } = useParams<{ postId: string }>();
   const numericPostId = Number(postId);
 
-  // const { user } = useAuth();
-  const { user } = useAuth() as { user: UserProfile };
+  // const { user } = useAuth() as { user: UserProfile };
 
   const [post, setPost] = useState<Post | null>([]);
+  const [user, SetUser] = useState<UserProfile | null>([])
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,9 +49,13 @@ const SinglePost = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`/api/post/${numericPostId}`);
-        console.log(response.data)
-        setPost(response.data);
+        const postRes = await api.get(`/api/post/${numericPostId}`);
+        console.log(postRes.data)
+        setPost(postRes.data);
+
+        const userRes = await api.get(`/api/user/${postRes.data.author_id}`);
+        console.log(userRes.data)
+        SetUser(userRes.data)
       } catch (err) {
         setError(err.message || "Something went wrong.");
       } finally {
@@ -107,7 +114,7 @@ const SinglePost = () => {
           <a href="#">
             <img
               className="w-6 h-6 rounded-full"
-              src="https://gravatar.com/avatar/f64fc44c03a8a7eb1d52502950879659?s=128"
+              src={user?.avatar}
               alt="kittydoe's avatar"
             />
           </a>

@@ -2,6 +2,14 @@ import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN, USER_ID } from "../constants";
 import api from "../api";
+// import { jwtDecode } from "jwt-decode";
+// import { verify, type JwtPayload } from "jsonwebtoken";
+
+// Define your custom payload structure
+// interface CustomJwtPayload extends JwtPayload {
+//   sub?: string;
+//   user_id?: number; // or string, depending on your ID type
+// }
 
 const LoginBar = () => {
   const [open, setOpen] = useState(false);
@@ -18,6 +26,10 @@ const LoginBar = () => {
       const response = await api.post("/api/token/", {email, password});
       localStorage.setItem(ACCESS_TOKEN, response.data.access);
       localStorage.setItem(REFRESH_TOKEN, response.data.refresh);
+
+      // const decodedToken = jwtDecode<CustomJwtPayload>(response.data.access);
+      // const userId = decodedToken.user_id || decodedToken.sub;
+      // localStorage.setItem(USER_ID, String(userId));
       navigate("/");
     } catch (error) {
         alert(error);
