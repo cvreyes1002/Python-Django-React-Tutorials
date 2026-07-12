@@ -8,6 +8,7 @@ import Profile from "./pages/Profile";
 import AvatarUploadForm from "./pages/AvatarUploadForm";
 import CreatePost from "./pages/CreatePost";
 import SinglePost from "./pages/SinglePost";
+import EditPost from "./pages/EditPost";
 
 // import { useEffect } from "react";
 
@@ -33,6 +34,7 @@ const App = () => {
           <Route path="/manage-avatar" element={<AvatarUploadForm />} />
           <Route path="/create-post" element={<CreatePost />} />
           <Route path="/post/:postId" element={<SinglePost />} />
+          <Route path="/post/:postId/edit" element={<EditPost />} />
         </Route>
         <Route path="/login" element={<TopPage />} />
         <Route path="/logout" element={<Logout />} />

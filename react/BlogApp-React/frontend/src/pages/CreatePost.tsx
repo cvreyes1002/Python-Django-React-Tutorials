@@ -26,7 +26,6 @@ const CreatePost = () => {
 
     setErrors(null);
     setSuccess(false);
-    // localStorage.clear();
 
     try {
       // Axios automatically stringifies formData to JSON and sets Content-Type header

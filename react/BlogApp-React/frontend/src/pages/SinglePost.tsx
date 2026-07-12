@@ -1,11 +1,14 @@
 import { Pencil, Trash2 } from "lucide-react";
-import Navbar from "../components/Navbar";
 import { useAuth } from "../components/ProtectedRoute";
 import { useEffect, useState } from "react";
-// import { ACCESS_TOKEN } from "../constants";
-import api from "../api";
 import { useParams } from "react-router-dom";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
+
+import api from "../api";
+import Navbar from "../components/Navbar";
+
+
 // import { jwtDecode } from "jwt-decode"
 
 // export default function PostContainer() {
@@ -43,6 +46,9 @@ const SinglePost = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+   const navigate = useNavigate();
+
+
   // const token = localStorage.getItem(ACCESS_TOKEN);
 
   useEffect(() => {
@@ -64,9 +70,32 @@ const SinglePost = () => {
     fetchData();
   }, []);
 
-  const handleDelete = (e: React.FormEvent) => {
+  const handleDelete = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    // Add delete logic here
+
+    setError(null);
+    // setSuccess(false);
+
+    try {
+      setLoading(true);
+      const response = await api.delete(`/api/post/delete/${numericPostId}/`);
+
+      if (response.status === 204) {  // Django's DestroyAPIView returns a 204 No Content status on success
+        console.log('Post deleted successfully!');
+        navigate(`/profile/${user.id}`)
+      }
+    } catch (err) {
+      // Axios catches any response outside the 2xx range in the catch block
+      if (err.response && err.response.data) {
+        // Populates validation issues returned by Django REST Framework
+        setErrors(err.response.data);
+        console.error('Error deleting post:', err.response?.data || err.message);
+      } else {
+        setErrors({ detail: "Network error. Please make sure your backend server is running." });
+      }
+    }
+
+
   };
 
   const isAuthor = user?.id === post?.author_id;
@@ -84,7 +113,7 @@ const SinglePost = () => {
             <div className="flex items-center gap-3">
               {/* Edit Button */}
               <a
-                href="#"
+                href={`/post/${postId}/edit`}
                 className="text-blue-600 hover:text-blue-800 transition-colors"
                 title="Edit"
               >
