@@ -2,11 +2,11 @@ import { Pencil, Trash2 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../components/ProtectedRoute";
 import { useEffect, useState } from "react";
-import { ACCESS_TOKEN } from "../constants";
+// import { ACCESS_TOKEN } from "../constants";
 import api from "../api";
 import { useParams } from "react-router-dom";
 import { format } from "date-fns";
-import { jwtDecode } from "jwt-decode"
+// import { jwtDecode } from "jwt-decode"
 
 // export default function PostContainer() {
 //   // Optional: Handle delete form submission
@@ -35,27 +35,26 @@ const SinglePost = () => {
   const { postId } = useParams<{ postId: string }>();
   const numericPostId = Number(postId);
 
-  // const { user } = useAuth() as { user: UserProfile };
+  const { user } = useAuth() as { user: UserProfile };
 
   const [post, setPost] = useState<Post | null>([]);
-  const [user, SetUser] = useState<UserProfile | null>([])
+  const [postAuthor, SetPostAuthor] = useState<UserProfile | null>([])
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const token = localStorage.getItem(ACCESS_TOKEN);
+  // const token = localStorage.getItem(ACCESS_TOKEN);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const postRes = await api.get(`/api/post/${numericPostId}`);
-        console.log(postRes.data)
+        const postRes = await api.get(`/api/post/${numericPostId}/`);
+        // console.log(postRes.data)
         setPost(postRes.data);
 
-        const userRes = await api.get(`/api/user/${postRes.data.author_id}`);
-        console.log(userRes.data)
-        SetUser(userRes.data)
+        const authorRes = await api.get(`/api/user/${postRes.data.author_id}/`);
+        SetPostAuthor(authorRes.data)
       } catch (err) {
         setError(err.message || "Something went wrong.");
       } finally {
@@ -70,10 +69,7 @@ const SinglePost = () => {
     // Add delete logic here
   };
 
-  // console.log(`ID of logged in user: ${user.id}`);
-  // console.log(`ID of the post: ${authorId}`);
   const isAuthor = user?.id === post?.author_id;
-  // console.log(`Value of isAuthor: ${isAuthor}`);
 
   return (
     <>
@@ -114,14 +110,14 @@ const SinglePost = () => {
           <a href="#">
             <img
               className="w-6 h-6 rounded-full"
-              src={user?.avatar}
+              src={isAuthor ? user?.avatar : postAuthor?.avatar}
               alt="kittydoe's avatar"
             />
           </a>
           <span>
             Posted by{" "}
             <a href="#" className="text-blue-600 hover:underline">
-              {isAuthor ? `${user.first_name} ${user.last_name}` : "kittydoe"}
+              {isAuthor ? `${user.first_name} ${user.last_name}` : `${postAuthor?.first_name} ${postAuthor?.last_name}`}
             </a>{" "}
             {`on ${post?.created_at && format(new Date(post.created_at), 'MM/dd/yyy')}`}
           </span>
