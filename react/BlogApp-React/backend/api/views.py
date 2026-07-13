@@ -10,7 +10,7 @@ from .serializers import (
     PostSerializer,
 )
 from django.contrib.auth import get_user_model
-from rest_framework.generics import RetrieveAPIView, CreateAPIView, DestroyAPIView
+from rest_framework.generics import RetrieveAPIView, CreateAPIView, DestroyAPIView, RetrieveUpdateDestroyAPIView
 from .models import Post
 from .permissions import IsAuthorOrReadOnly
 
@@ -29,7 +29,14 @@ class UserDetailView(RetrieveAPIView):
     serializer_class = UserSerializer
 
 
-class ShowPostView(RetrieveAPIView):
+# class ShowPostView(RetrieveAPIView):
+class ShowPostView(RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+
+class RetrieveAllPostsView(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Post.objects.all()
     serializer_class = PostSerializer

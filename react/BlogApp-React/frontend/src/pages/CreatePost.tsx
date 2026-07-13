@@ -28,8 +28,6 @@ const CreatePost = () => {
     setSuccess(false);
 
     try {
-      // Axios automatically stringifies formData to JSON and sets Content-Type header
-      // const response = await axios.post('http://127.0.0.1:8000/api/register/', formData);
       const response = await api.post("/api/create-post/", formData);
 
       if (response.status === 201) {

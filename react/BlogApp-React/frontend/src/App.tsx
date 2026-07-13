@@ -30,7 +30,7 @@ const App = () => {
       <Routes>
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Home />} />
-          <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/profile/:userId" element={<Profile />} />
           <Route path="/manage-avatar" element={<AvatarUploadForm />} />
           <Route path="/create-post" element={<CreatePost />} />
           <Route path="/post/:postId" element={<SinglePost />} />
