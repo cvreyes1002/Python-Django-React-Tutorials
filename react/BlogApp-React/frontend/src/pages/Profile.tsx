@@ -5,8 +5,11 @@ import { useParams } from "react-router-dom";
 import { ACCESS_TOKEN } from "../constants";
 import axios from "axios";
 import ProfileHeader from "../components/ProfileHeader";
-import ProfileNavTabs from "../components/ProfileNavTabs";
+// import ProfileNavTabs from "../components/ProfileNavTabs";
 import ProfileListGrp from "../components/ProfileListGrp";
+import ProfileBody from "../components/ProfileBody";
+
+import { format } from "date-fns";
 
 import api from "../api";
 import Navbar from "../components/Navbar";
@@ -57,8 +60,11 @@ const Profile = () => {
         setLoading(true);
         // 3. Hit your backend endpoint designed to filter posts by user ID
         // Adjust this URL path to match your Django URL configurations (e.g., /api/posts/user/1/)
-        const response = await api.get(`/api/posts/user/${numericId}/`);
-        console.log(response.data)
+        // const response = await api.get(`/api/posts/user/${userId}/`);
+        const response = await api.get("/api/posts/", {
+          params: { author_id: userId}
+        });
+        // console.log(response.data)
         setPosts(response.data);
       } catch (err: any) {
         setError(err.message || "Failed to fetch posts.");
@@ -79,8 +85,9 @@ const Profile = () => {
     <>
       <Navbar />
       <div className="mx-auto max-w-3xl px-4 py-6 md:py-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">User Posts</h2>
-        
+        {/* <h2 className="text-2xl font-bold text-gray-900 mb-6">User Posts</h2> */}
+        <ProfileHeader userId={numericId} />
+        <ProfileBody />
         {posts.length === 0 ? (
           <p className="text-gray-500">This user hasn't posted anything yet.</p>
         ) : (

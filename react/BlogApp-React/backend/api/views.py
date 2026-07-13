@@ -9,10 +9,16 @@ from .serializers import (
     AvatarSerializer,
     PostSerializer,
 )
-from django.contrib.auth import get_user_model
-from rest_framework.generics import RetrieveAPIView, CreateAPIView, DestroyAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import (
+    RetrieveAPIView,
+    CreateAPIView,
+    DestroyAPIView,
+    RetrieveUpdateDestroyAPIView,
+    ListAPIView,
+)
 from .models import Post
 from .permissions import IsAuthorOrReadOnly
+from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
@@ -36,10 +42,19 @@ class ShowPostView(RetrieveUpdateDestroyAPIView):
     serializer_class = PostSerializer
 
 
-class RetrieveAllPostsView(RetrieveUpdateDestroyAPIView):
+class RetrieveAllPostsView(ListAPIView):
     permission_classes = [IsAuthenticated]
-    queryset = Post.objects.all()
+    # queryset = Post.objects.all()
     serializer_class = PostSerializer
+
+    def get_queryset(self):
+        queryset = Post.objects.all()
+        author_id = self.request.query_params.get("author_id")
+
+        if author_id is not None:
+            queryset = queryset.filter(author_id=author_id)
+
+        return queryset
 
 
 class CreatePostView(CreateAPIView):
