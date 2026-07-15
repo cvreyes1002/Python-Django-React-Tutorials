@@ -17,7 +17,7 @@ const ProfileHeader = ({ userId }: { userId: number }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const token = localStorage.getItem(ACCESS_TOKEN);
+  // const token = localStorage.getItem(ACCESS_TOKEN);
 
   const isCurrentUser = userId === currentUser.id;
 
@@ -38,7 +38,8 @@ const ProfileHeader = ({ userId }: { userId: number }) => {
     };
     fetchData();
 
-  }, [userId, token]);
+  // }, [userId, token]);
+  }, [userId]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -59,6 +60,11 @@ const ProfileHeader = ({ userId }: { userId: number }) => {
     e.preventDefault();
     // Handle follow logic here (e.g., API call to follow)
     console.log(`Following user ${userId}`);
+
+
+
+
+    
   };
 
   return (

@@ -8,6 +8,7 @@ from .serializers import (
     UserSerializer,
     AvatarSerializer,
     PostSerializer,
+    FollowSerializer,
 )
 from rest_framework.generics import (
     RetrieveAPIView,
@@ -21,6 +22,18 @@ from .permissions import IsAuthorOrReadOnly
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
+
+
+class FollowView(RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Post.objects.all()
+    serializer_class = FollowSerializer
+
+
+class UnfollowView(RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Post.objects.all()
+    serializer_class = FollowSerializer
 
 
 class DeletePostView(DestroyAPIView):

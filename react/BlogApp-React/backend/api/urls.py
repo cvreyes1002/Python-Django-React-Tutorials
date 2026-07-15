@@ -13,6 +13,10 @@ urlpatterns = [
     # path("posts/user/<int:pk>/", views.RetrieveAllPostsView.as_view(), name="show-all-post"),
     path("posts/", views.RetrieveAllPostsView.as_view(), name="show-all-post"),
 
+    # Follow related URLs
+    path("follow/<int:pk>/", views.FollowView.as_view(), name="follow-user"),
+    path("unfollow/<int:pk>/", views.UnfollowView.as_view(), name="unfollow-user"),
+
     # path("notes/", views.NoteListCreate.as_view(), name="note-list"),
     # path("notes/delete/<int:pk>/", views.NoteDelete.as_view(), name="delete-note")
 ]
