@@ -14,10 +14,11 @@ const ProfileHeader = ({ userId }: { userId: number }) => {
   const { user: currentUser } = useAuth() as { user: UserProfile };
 
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+
+  const [isFollowing, setIsFollowing] = useState(false);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // const token = localStorage.getItem(ACCESS_TOKEN);
 
   const isCurrentUser = userId === currentUser.id;
 
@@ -37,8 +38,6 @@ const ProfileHeader = ({ userId }: { userId: number }) => {
       }
     };
     fetchData();
-
-  // }, [userId, token]);
   }, [userId]);
 
   if (loading) return <div>Loading...</div>;
@@ -56,15 +55,30 @@ const ProfileHeader = ({ userId }: { userId: number }) => {
   //   // Handle follow logic here
   // };
 
-  const handleFollowSubmit = (e: React.MouseEvent) => {
+  const handleFollowSubmit = async (e: React.MouseEvent) => {
     e.preventDefault();
     // Handle follow logic here (e.g., API call to follow)
     console.log(`Following user ${userId}`);
 
+    // Decidte dynamically whether to POST (follow) or DELETE (unfollow)
+    const method = isFollowing ? "delete" : "post";
 
+    try {
+      const response = await api[method](`/api/follow/${userId}/`)
+      console.log(response.data)
 
-
-    
+    } catch (err) {
+      // Axios stores API error responses under err.response
+      if (err.response && err.response.data) {
+        const apiError = err.response.data.detail || JSON.stringify(err.response.data);
+        setError(apiError)
+      } else {
+      setError("Network Error. Please try again");
+      }
+      console.error("Follow error: ", err)
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

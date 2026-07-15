@@ -17,23 +17,59 @@ from rest_framework.generics import (
     RetrieveUpdateDestroyAPIView,
     ListAPIView,
 )
-from .models import Post
+from .models import Post, Follow
 from .permissions import IsAuthorOrReadOnly
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 
 User = get_user_model()
 
 
-class FollowView(RetrieveUpdateDestroyAPIView):
+class FollowUnfollowView(APIView):
     permission_classes = [IsAuthenticated]
-    queryset = Post.objects.all()
-    serializer_class = FollowSerializer
+
+    # POST to follow
+    def post(self, request, pk):
+        user_to_follow = get_object_or_404(User, id=pk)
+
+        if request.user == user_to_follow:
+            return Response({"detail": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # get_or_create prevents duplicate follow records gracefully
+        follow, created = Follow.objects.get_or_create(follower=request.user, following=user_to_follow)
+        
+        if not created:
+            return Response({"detail": "You are already following this user."}, status=status.HTTP_400_BAD_REQUEST)
+            
+        serializer = FollowSerializer(follow)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    # DELETE to unfollow
+    def delete(self, request, pk):
+        user_to_unfollow = get_object_or_404(User, id=pk)
+        
+        # Try to find the follow relationship and delete it
+        follow_relation = Follow.objects.filter(follower=request.user, following=user_to_unfollow)
+        
+        if follow_relation.exists():
+            follow_relation.delete()
+            return Response({"detail": "Successfully unfollowed."}, status=status.HTTP_204_NO_CONTENT)
+            
+        return Response({"detail": "You are not following this user."}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UnfollowView(RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAuthenticated]
-    queryset = Post.objects.all()
-    serializer_class = FollowSerializer
+
+
+# class FollowView(RetrieveUpdateDestroyAPIView):
+#     permission_classes = [IsAuthenticated]
+#     queryset = Post.objects.all()
+#     serializer_class = FollowSerializer
+
+
+# class UnfollowView(RetrieveUpdateDestroyAPIView):
+#     permission_classes = [IsAuthenticated]
+#     queryset = Post.objects.all()
+#     serializer_class = FollowSerializer
 
 
 class DeletePostView(DestroyAPIView):
