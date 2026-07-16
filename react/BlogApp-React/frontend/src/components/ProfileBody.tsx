@@ -53,7 +53,7 @@ const ProfileBody = () => {
     queryKey: ["following", userId],
     queryFn: async () => {
       const res = await api.get(`/api/profile/${userId}/following/`);
-      console.log(res.data);
+      // console.log(res.data);
       return res.data;
     },
     enabled: activeTab === "following"
@@ -74,6 +74,9 @@ const ProfileBody = () => {
     return `${baseClass} ${activeTab === tabId ? activeClass : inactiveClass}`;
   }
 
+  // console.log("Followers: " , followers)
+  // console.log("Following: " , following)
+
   return (
     <div>
       {/* Tab Navigation Headers */}
@@ -91,7 +94,6 @@ const ProfileBody = () => {
           className={getTabClass("followers")}
         >
           Followers: {data?.followers_count}
-          {/* Followers: 3 */}
         </a>
         <a
           href="#"
@@ -99,7 +101,6 @@ const ProfileBody = () => {
           className={getTabClass("following")}
         >
           Following: {data?.following_count}
-          {/* Following: 3 */}
         </a>
       </div>
 
@@ -134,8 +135,26 @@ const ProfileBody = () => {
           )
         )}
 
-        {/* {activeTab === "posts" && <div>👥 Here is the list of posts...</div>} */}
-        {activeTab === "followers" && <div>👥 Here is the list of followers...</div>}
+        {activeTab === "followers" && (
+          followersLoading ? (
+            <p>Loading followers...</p>
+          ) : (
+            data?.followers_count === 0 ? (
+              <p> No Followers </p>
+            ) : (
+              <div className="flex flex-col border border-gray-200 rounded-lg divide-y divide-gray-200 overflow-hidden">
+                {followers.map((follower) => (
+                  <div key={follower.id} className="px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-150">
+                    <Link to={`/profile/${follower.id}`} className="flex items-center gap-3">
+                      <img className="w-8 h-8 rounded-full object-cover" src={follower.avatar} alt={`${follower.first_name}'s avatar`} />
+                      <span>{follower.first_name} {follower.last_name}</span>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            )
+          )
+        )}
         {activeTab === "following" && <div>👀 Here are the accounts being followed...</div>}
       </div>
     </div>
