@@ -38,7 +38,7 @@ export const ProtectedRoute = () => {
       }
     } catch (error) {
       console.log(error);
-      setUserId(null);
+      setUser(null);
       setIsAuthorized(false);
     }
   };
@@ -67,17 +67,10 @@ export const ProtectedRoute = () => {
       await refreshToken()
     } else {
       const response = await api.get("/api/user/me/", {headers: {Authorization: `Bearer ${token}`, },});
-      // const response = await axios.get('http://127.0.0.1:8000/api/user/me/', {
-      //   headers: {
-      //     Authorization: `Bearer ${token}`,
-      //   },
-      // });
-
       setUser(response.data);
       setIsAuthorized(true)
     }
   }
-    // const response = await api.get("/api/user/me/", {headers: {Authorization: `Bearer ${token}`, },});
   if (isAuthorized === null) {
     return <div>Loading...</div>
   }

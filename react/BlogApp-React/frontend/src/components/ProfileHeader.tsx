@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../components/ProtectedRoute";
-import { ACCESS_TOKEN } from "../constants";
 import { Link } from "react-router";
 import api from "../api";
 
@@ -10,18 +9,16 @@ interface UserProfile {
   avatar: string;
 }
 
-  const colorMap = {
-    gray: "bg-gray-600 hover:bg-gray-700",
-    red: "bg-red-600 hover:bg-red-700",
-    blue: "bg-blue-600 hover:bg-blue-700",
-  }
-
+const colorMap = {
+  gray: "bg-gray-600 hover:bg-gray-700",
+  red: "bg-red-600 hover:bg-red-700",
+  blue: "bg-blue-600 hover:bg-blue-700",
+};
 
 const ProfileHeader = ({ userId }: { userId: number }) => {
   const { user: currentUser } = useAuth() as { user: UserProfile };
 
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-
   const [isFollowing, setIsFollowing] = useState(false);
 
   const [loading, setLoading] = useState(true);
@@ -77,7 +74,7 @@ const ProfileHeader = ({ userId }: { userId: number }) => {
     try {
       const response = await api[method](`/api/follow/${userId}/`);
       console.log(response.data);
-      setIsFollowing(!isFollowing)
+      setIsFollowing(!isFollowing);
     } catch (err) {
       // Axios stores API error responses under err.response
       if (err.response && err.response.data) {
@@ -94,7 +91,7 @@ const ProfileHeader = ({ userId }: { userId: number }) => {
   };
 
   const buttonColorClass = isFollowing ? colorMap["red"] : colorMap["blue"];
-  const buttonText = isFollowing ? "Stop Following" : "Follow"
+  const buttonText = isFollowing ? "Stop Following" : "Follow";
 
   return (
     <h2 className="flex items-center text-2xl font-bold tracking-tight text-gray-900 md:text-3xl">

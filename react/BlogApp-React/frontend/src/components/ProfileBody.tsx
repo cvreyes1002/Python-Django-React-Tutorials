@@ -129,29 +129,3 @@ const ProfileBody = () => {
 }
 
 export default ProfileBody
-
-
-        // {activeTab === "posts" && (
-        //   posts.length === 0 ? (
-        //   <p className="text-gray-500">This user hasn't posted anything yet.</p>
-        // ) : (
-        //       <div className="space-y-6">
-        //         {/* 4. Map over the array of posts to render each one */}
-        //         {posts.map((post) => (
-        //           <div key={post.id} className="p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
-        //             <Link to={`/post/${post.id}`}>
-        //               <h3 className="text-xl font-semibold text-blue-600 hover:underline mb-2">
-        //                 {post.title}
-        //               </h3>
-        //             </Link>
-        //             <p className="text-gray-500 text-sm mb-3">
-        //               {post.created_at && format(new Date(post.created_at), 'MM/dd/yyyy')}
-        //             </p>
-        //             <p className="text-gray-700 line-clamp-3">
-        //               {post.content}
-        //             </p>
-        //           </div>
-        //         ))}
-        //       </div>
-        //     )
-        // )}

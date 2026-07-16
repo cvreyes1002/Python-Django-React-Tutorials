@@ -5,8 +5,6 @@ import { useParams } from "react-router-dom";
 import { ACCESS_TOKEN } from "../constants";
 import axios from "axios";
 import ProfileHeader from "../components/ProfileHeader";
-// import ProfileNavTabs from "../components/ProfileNavTabs";
-import ProfileListGrp from "../components/ProfileListGrp";
 import ProfileBody from "../components/ProfileBody";
 
 import { format } from "date-fns";
