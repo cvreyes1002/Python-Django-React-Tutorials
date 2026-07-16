@@ -9,6 +9,7 @@ from .serializers import (
     AvatarSerializer,
     PostSerializer,
     FollowSerializer,
+    UserMinSerializer,
 )
 from rest_framework.generics import (
     RetrieveAPIView,
@@ -23,6 +24,24 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 
 User = get_user_model()
+
+
+class FollowStatsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        # 'followers_set' comes from the related_name in the 'following' field
+        followers_count = user.followers_set.count()
+
+        # 'following_set' comes from the related_name in the 'follower' field
+        following_count = user.following_set.count()
+
+        return Response({
+            "followers_count": followers_count,
+            "following_count": following_count
+        })
 
 
 class FollowUnfollowView(APIView):
@@ -83,6 +102,38 @@ class FollowUnfollowView(APIView):
             {"detail": "You are not following this user."},
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+
+class ProfileFollowersView(APIView):
+    """
+    Returns a list of users who are following the user specified by pk.
+    """
+    def get(self, request, pk):
+        # Verify the user exists first
+        target_user = get_object_or_404(User, pk=pk)
+        
+        # Get all follow relations where 'following' is our target user
+        follows = Follow.objects.filter(following=target_user).select_related('follower')
+        followers = [follow.follower for follow in follows]
+        
+        serializer = UserMinSerializer(followers, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class ProfileFollowingView(APIView):
+    """
+    Returns a list of users whom the user specified by pk is following.
+    """
+    def get(self, request, pk):
+        # Verify the user exists first
+        target_user = get_object_or_404(User, pk=pk)
+        
+        # Get all follow relations where 'follower' is our target user
+        follows = Follow.objects.filter(follower=target_user).select_related('following')
+        following = [follow.following for follow in follows]
+        
+        serializer = UserMinSerializer(following, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class DeletePostView(DestroyAPIView):

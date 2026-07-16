@@ -6,8 +6,23 @@ import { format } from "date-fns";
 
 import api from "../api";
 
+// API Fetcher function
+// const fetchFollowStats = async () => {
+//   const { data } = await api.get("/api/follow-stats/");
+//   return data;  // Returns { followers_count: X,  following_count: Y }
+// }
+
 const ProfileBody = () => {
   const { userId } = useParams<{ userId: string }>();
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['followStats'],
+    queryFn: async () => {
+      const { data } = await api.get("/api/follow-stats/");
+      // console.log(data)
+      return data;  // Returns { followers_count: X,  following_count: Y }
+    },
+  });
 
   // 1. Define state to keep track of active tab ID
   const [activeTab, setActiveTab] = useState<"posts" | "followers" | "following">("posts");
@@ -22,28 +37,25 @@ const ProfileBody = () => {
     enabled: activeTab === "posts"
   });
 
-  // console.log(posts?.length)
-
-  // Using .then() instead of async / wait
-  // const { data: posts, isLoading: postLoading } = useQuery({
-  //   queryKey: ["posts", userId],
-  //   queryFn: () => api.get("/api/posts/", { params: { author_id: userId } }).then(res => res.data),
-  //   enabled: activeTab === "posts"
-  // });
-
-
-
   // This will ONLY fire the network request the moment the activeTab changes to "followers"
   const { data: followers, isLoading: followersLoading } = useQuery({
     queryKey: ["followers", userId],
-    queryFn: () => api.get(`/api/user/${userId}/followers/`).then(res => res.data),
+    queryFn: async () => {
+      const res = await api.get(`/api/profile/${userId}/followers/`);
+      console.log(res.data);
+      return res.data;
+    },
     enabled: activeTab === "followers"
   });
 
   // This will ONLY fire the network request the moment the activeTab changes to "following"
   const { data: following, isLoading: followingLoading } = useQuery({
     queryKey: ["following", userId],
-    queryFn: () => api.get(`/api/user/${userId}/following/`).then(res => res.data),
+    queryFn: async () => {
+      const res = await api.get(`/api/profile/${userId}/following/`);
+      console.log(res.data);
+      return res.data;
+    },
     enabled: activeTab === "following"
   });
 
@@ -71,21 +83,23 @@ const ProfileBody = () => {
           onClick={(e) => handleTabClick(e, "posts")}
           className={getTabClass("posts")}
         >
-          Posts: 3
+          Posts: {posts?.length}
         </a>
         <a
           href="#"
           onClick={(e) => handleTabClick(e, "followers")}
           className={getTabClass("followers")}
         >
-          Followers: 3
+          Followers: {data?.followers_count}
+          {/* Followers: 3 */}
         </a>
         <a
           href="#"
           onClick={(e) => handleTabClick(e, "following")}
           className={getTabClass("following")}
         >
-          Following: 2
+          Following: {data?.following_count}
+          {/* Following: 3 */}
         </a>
       </div>
 
@@ -129,3 +143,4 @@ const ProfileBody = () => {
 }
 
 export default ProfileBody
+

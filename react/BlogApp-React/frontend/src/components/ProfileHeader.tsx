@@ -47,7 +47,7 @@ const ProfileHeader = ({ userId }: { userId: number }) => {
         setLoading(true);
         const response = await api.get(`/api/follow/${userId}/`);
         setIsFollowing(response.data.is_following);
-        console.log(response.data);
+        // console.log(response.data);
       } catch (err) {
         setError(err.message || "Something went wrong.");
       } finally {
@@ -66,14 +66,14 @@ const ProfileHeader = ({ userId }: { userId: number }) => {
   const handleFollowSubmit = async (e: React.MouseEvent) => {
     e.preventDefault();
     // Handle follow logic here (e.g., API call to follow)
-    console.log(`Following user ${userId}`);
+    // console.log(`Following user ${userId}`);
 
     // Decide dynamically whether to POST (follow) or DELETE (unfollow)
     const method = isFollowing ? "delete" : "post";
 
     try {
       const response = await api[method](`/api/follow/${userId}/`);
-      console.log(response.data);
+      // console.log(response.data);
       setIsFollowing(!isFollowing);
     } catch (err) {
       // Axios stores API error responses under err.response

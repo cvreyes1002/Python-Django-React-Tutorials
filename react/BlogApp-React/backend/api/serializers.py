@@ -56,6 +56,12 @@ class FollowSerializer(serializers.ModelSerializer):
         fields = ("id", "follower", "following", "created_at")
 
 
+class UserMinSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'avatar']
+
+
 ###########################
 # Original - From Tutorial
 ###########################
