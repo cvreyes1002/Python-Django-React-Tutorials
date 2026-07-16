@@ -28,48 +28,61 @@ User = get_user_model()
 class FollowUnfollowView(APIView):
     permission_classes = [IsAuthenticated]
 
-    # POST to follow
+    # GET (Check if current user is following target user)
+    def get(self, request, pk):
+        # Check if a follow record exists matching the current user and the target user
+        is_following = Follow.objects.filter(
+            follower=request.user.id,
+            following=pk
+        ).exists()
+
+        return Response({"is_following": is_following}, status=status.HTTP_200_OK)
+
+
+    # POST (to follow)
     def post(self, request, pk):
         user_to_follow = get_object_or_404(User, id=pk)
 
         if request.user == user_to_follow:
-            return Response({"detail": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response(
+                {"detail": "You cannot follow yourself."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         # get_or_create prevents duplicate follow records gracefully
-        follow, created = Follow.objects.get_or_create(follower=request.user, following=user_to_follow)
-        
+        follow, created = Follow.objects.get_or_create(
+            follower=request.user, following=user_to_follow
+        )
+
         if not created:
-            return Response({"detail": "You are already following this user."}, status=status.HTTP_400_BAD_REQUEST)
-            
+            return Response(
+                {"detail": "You are already following this user."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         serializer = FollowSerializer(follow)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    # DELETE to unfollow
+    # DELETE (to unfollow)
     def delete(self, request, pk):
         user_to_unfollow = get_object_or_404(User, id=pk)
-        
+
         # Try to find the follow relationship and delete it
-        follow_relation = Follow.objects.filter(follower=request.user, following=user_to_unfollow)
-        
+        follow_relation = Follow.objects.filter(
+            follower=request.user, following=user_to_unfollow
+        )
+
         if follow_relation.exists():
             follow_relation.delete()
-            return Response({"detail": "Successfully unfollowed."}, status=status.HTTP_204_NO_CONTENT)
-            
-        return Response({"detail": "You are not following this user."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": "Successfully unfollowed."},
+                status=status.HTTP_204_NO_CONTENT,
+            )
 
-
-
-
-# class FollowView(RetrieveUpdateDestroyAPIView):
-#     permission_classes = [IsAuthenticated]
-#     queryset = Post.objects.all()
-#     serializer_class = FollowSerializer
-
-
-# class UnfollowView(RetrieveUpdateDestroyAPIView):
-#     permission_classes = [IsAuthenticated]
-#     queryset = Post.objects.all()
-#     serializer_class = FollowSerializer
+        return Response(
+            {"detail": "You are not following this user."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 
 class DeletePostView(DestroyAPIView):

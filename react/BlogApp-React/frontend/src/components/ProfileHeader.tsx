@@ -10,6 +10,13 @@ interface UserProfile {
   avatar: string;
 }
 
+  const colorMap = {
+    gray: "bg-gray-600 hover:bg-gray-700",
+    red: "bg-red-600 hover:bg-red-700",
+    blue: "bg-blue-600 hover:bg-blue-700",
+  }
+
+
 const ProfileHeader = ({ userId }: { userId: number }) => {
   const { user: currentUser } = useAuth() as { user: UserProfile };
 
@@ -27,9 +34,6 @@ const ProfileHeader = ({ userId }: { userId: number }) => {
       try {
         setLoading(true);
         const response = await api.get(`/api/user/${userId}/`);
-        // const response = await api.get(`/api/user/${userId}/`, {
-        //   headers: { Authorization: `Bearer ${token}` },
-        // });
         setUserProfile(response.data);
       } catch (err) {
         setError(err.message || "Something went wrong.");
@@ -40,46 +44,57 @@ const ProfileHeader = ({ userId }: { userId: number }) => {
     fetchData();
   }, [userId]);
 
+  useEffect(() => {
+    const fetchFollowStatus = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get(`/api/follow/${userId}/`);
+        setIsFollowing(response.data.is_following);
+        console.log(response.data);
+      } catch (err) {
+        setError(err.message || "Something went wrong.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFollowStatus();
+  }, []);
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
   // 3. Use userProfile data if it's someone else, otherwise use the logged-in user data
   const profileToDisplay = isCurrentUser ? currentUser : userProfile;
 
-  // if ( userId !== user.id ) {
-  //   Object.assign(user, userProfile);
-  // }
-
-  // const handleFollowSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   // Handle follow logic here
-  // };
-
   const handleFollowSubmit = async (e: React.MouseEvent) => {
     e.preventDefault();
     // Handle follow logic here (e.g., API call to follow)
     console.log(`Following user ${userId}`);
 
-    // Decidte dynamically whether to POST (follow) or DELETE (unfollow)
+    // Decide dynamically whether to POST (follow) or DELETE (unfollow)
     const method = isFollowing ? "delete" : "post";
 
     try {
-      const response = await api[method](`/api/follow/${userId}/`)
-      console.log(response.data)
-
+      const response = await api[method](`/api/follow/${userId}/`);
+      console.log(response.data);
+      setIsFollowing(!isFollowing)
     } catch (err) {
       // Axios stores API error responses under err.response
       if (err.response && err.response.data) {
-        const apiError = err.response.data.detail || JSON.stringify(err.response.data);
-        setError(apiError)
+        const apiError =
+          err.response.data.detail || JSON.stringify(err.response.data);
+        setError(apiError);
       } else {
-      setError("Network Error. Please try again");
+        setError("Network Error. Please try again");
       }
-      console.error("Follow error: ", err)
+      console.error("Follow error: ", err);
     } finally {
       setLoading(false);
     }
   };
+
+  const buttonColorClass = isFollowing ? colorMap["red"] : colorMap["blue"];
+  const buttonText = isFollowing ? "Stop Following" : "Follow"
 
   return (
     <h2 className="flex items-center text-2xl font-bold tracking-tight text-gray-900 md:text-3xl">
@@ -99,9 +114,9 @@ const ProfileHeader = ({ userId }: { userId: number }) => {
       ) : (
         <button
           onClick={handleFollowSubmit}
-          className="ml-2 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded transition-colors duration-200"
+          className={`ml-2 px-3 py-1.5 text-sm font-medium text-white ${buttonColorClass} rounded transition-colors duration-200`}
         >
-          Follow +
+          {buttonText}
         </button>
       )}
     </h2>
