@@ -4,7 +4,8 @@ from . import views
 urlpatterns = [
     path("user/me/", views.CurrentUserView.as_view(), name="current-user"),
     path("manage-avatar/", views.ImageUploadView.as_view(), name="manage-avatar"),
-    path("user/<int:pk>/", views.UserDetailView.as_view(), name="check-user-by-id"),
+    # path("user/<int:pk>/", views.UserDetailView.as_view(), name="check-user-by-id"),
+    path("profile/<int:pk>/", views.UserDetailView.as_view(), name="check-user-by-id"),
 
     path("profile/<int:pk>/followers/", views.ProfileFollowersView.as_view(), name="profile-followers"),
     path("profile/<int:pk>/following/", views.ProfileFollowingView.as_view(), name="profile-following"),
