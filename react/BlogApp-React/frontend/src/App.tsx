@@ -10,6 +10,7 @@ import AvatarUploadForm from "./pages/AvatarUploadForm";
 import CreatePost from "./pages/CreatePost";
 import SinglePost from "./pages/SinglePost";
 import EditPost from "./pages/EditPost";
+import Footer from "./components/Footer";
 
 function Logout() {
   localStorage.clear();
@@ -44,6 +45,7 @@ const App = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
+      <Footer />
     </QueryClientProvider>
   );
 };

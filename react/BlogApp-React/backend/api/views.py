@@ -29,19 +29,38 @@ User = get_user_model()
 class FollowStatsView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        user = request.user
+    def get(self, request, pk):
+        
+        target_user = get_object_or_404(User, id=pk)  # Fetch the specified user or return 404 if they don't exist
 
-        # 'followers_set' comes from the related_name in the 'following' field
-        followers_count = user.followers_set.count()
+        followers_count = target_user.followers_set.count()
+        following_count = target_user.following_set.count()
 
-        # 'following_set' comes from the related_name in the 'follower' field
-        following_count = user.following_set.count()
+        return Response(
+            {
+                # "user_id": target_user.id,
+                "followers_count": followers_count,
+                "following_count": following_count,
+            }
+        )
 
-        return Response({
-            "followers_count": followers_count,
-            "following_count": following_count
-        })
+
+# class FollowStatsView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request):
+#         user = request.user
+
+#         # 'followers_set' comes from the related_name in the 'following' field
+#         followers_count = user.followers_set.count()
+
+#         # 'following_set' comes from the related_name in the 'follower' field
+#         following_count = user.following_set.count()
+
+#         return Response({
+#             "followers_count": followers_count,
+#             "following_count": following_count
+#         })
 
 
 class FollowUnfollowView(APIView):

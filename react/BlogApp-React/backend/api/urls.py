@@ -21,7 +21,7 @@ urlpatterns = [
     # path("follow/<int:pk>/", views.FollowView.as_view(), name="follow-user"),
     # path("unfollow/<int:pk>/", views.UnfollowView.as_view(), name="unfollow-user"),
     path("follow/<int:pk>/", views.FollowUnfollowView.as_view(), name="follow-unfollow"),
-    path("follow-stats/", views.FollowStatsView.as_view(), name="follow-stats"),
+    path("follow-stats/<int:pk>/", views.FollowStatsView.as_view(), name="follow-stats"),
 
     # path("notes/", views.NoteListCreate.as_view(), name="note-list"),
     # path("notes/delete/<int:pk>/", views.NoteDelete.as_view(), name="delete-note")

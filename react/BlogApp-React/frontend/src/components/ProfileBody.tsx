@@ -18,7 +18,7 @@ const ProfileBody = () => {
   const { data, isLoading, error } = useQuery({
     queryKey: ['followStats'],
     queryFn: async () => {
-      const { data } = await api.get("/api/follow-stats/");
+      const { data } = await api.get(`/api/follow-stats/${userId}`);
       // console.log(data)
       return data;  // Returns { followers_count: X,  following_count: Y }
     },
@@ -32,6 +32,7 @@ const ProfileBody = () => {
     queryKey: ["posts", userId],
     queryFn: async () => {
       const res = await api.get("/api/posts/", { params: { author_id: userId } });
+      // const res = await api.get(`/api/posts/${userId}`);
       return res.data;
     },
     enabled: activeTab === "posts"
@@ -42,7 +43,7 @@ const ProfileBody = () => {
     queryKey: ["followers", userId],
     queryFn: async () => {
       const res = await api.get(`/api/profile/${userId}/followers/`);
-      console.log(res.data);
+      // console.log(res.data);
       return res.data;
     },
     enabled: activeTab === "followers"
@@ -155,7 +156,26 @@ const ProfileBody = () => {
             )
           )
         )}
-        {activeTab === "following" && <div>👀 Here are the accounts being followed...</div>}
+        {activeTab === "following" && (
+          followingLoading ? (
+            <p>Loading following...</p>
+          ) : (
+            data?.following_count === 0 ? (
+              <p> No users being followed. </p>
+            ) : (
+              <div className="flex flex-col border border-gray-200 rounded-lg divide-y divide-gray-200 overflow-hidden">
+                {following.map((following) => (
+                  <div key={following.id} className="px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-150">
+                    <Link to={`/profile/${following.id}`} className="flex items-center gap-3">
+                      <img className="w-8 h-8 rounded-full object-cover" src={following.avatar} alt={`${following.first_name}'s avatar`} />
+                      <span>{following.first_name} {following.last_name}</span>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            )
+          )
+        )}
       </div>
     </div>
   )
