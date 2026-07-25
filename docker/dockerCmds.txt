@@ -7,8 +7,11 @@
 # Create and RUN a docker container and publish a container's port to the host
 > docker run -p 9000:8000 -it --name [container-name] --user creyes ubuntu-server:26.04 /bin/bash
 
-# Start an already existing container container
+# Start an already existing container
 > docker start [container-name]
+
+# Restart a container
+> docker restart [container-name]
 
 # Start a terminal on a container already running in the background
 > docker exec -it --user creyes [container-name] /bin/bash
