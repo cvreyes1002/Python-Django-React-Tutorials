@@ -1,25 +1,21 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import React, { useState } from "react";
 import api from "../api";
-import axios from "axios";
-import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
+import { ACCESS_TOKEN } from "../constants";
 import { useAuth } from "../components/ProtectedRoute";
 import Navbar from "../components/Navbar";
 
 const AvatarUploadForm = () => {
   const { user } = useAuth();
   
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
-  const [error, setError] = useState(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // const { userId } = useAuth(); // Get the user ID from the context
-  console.log("User ID from context:", user?.id); // Debugging line to check the user ID
-
   // Handle image selection
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     
     if (file) {
       // Validate if it's actually an image
@@ -36,7 +32,7 @@ const AvatarUploadForm = () => {
   };
 
   // Handle form submission
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!selectedImage) {
@@ -60,15 +56,7 @@ const AvatarUploadForm = () => {
       try {
         console.log('Uploading...', selectedImage.name);
 
-        // Update the logged-in user's profile
-        // const response = await axios.post('http://127.0.0.1:8000/api/manage-avatar/', formData, {
-        //   headers: {
-        //     // Explicitly pass your token so Django knows who request.user is
-        //     'Authorization': `Bearer ${token}`
-        //   }
-        // });
-
-        const response = await api.post("/api/manage-avatar/", formData);
+        await api.post("/api/manage-avatar/", formData);
         navigate(`/profile/${user.id || "default"}`); // Redirect to profile page after successful upload
         window.location.reload(); // Reload the page to reflect the new avatar
 
@@ -79,7 +67,7 @@ const AvatarUploadForm = () => {
     fetchUserData();
   }
   // if (loading) return <p>Loading user profile...</p>;
-  // if (error) return <p>{error}</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <>
@@ -118,7 +106,7 @@ const AvatarUploadForm = () => {
 }
 
 // Simple inline styles for demonstration
-const styles = {
+const styles: Record<string, React.CSSProperties> ={
   container: {
     maxWidth: '400px',
     margin: '40px auto',

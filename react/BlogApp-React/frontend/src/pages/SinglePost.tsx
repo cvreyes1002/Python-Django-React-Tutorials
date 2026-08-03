@@ -7,17 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 import api from "../api";
 import Navbar from "../components/Navbar";
-
-
-// import { jwtDecode } from "jwt-decode"
-
-// export default function PostContainer() {
-//   // Optional: Handle delete form submission
-//   const handleDelete = (e: React.FormEvent) => {
-//     e.preventDefault();
-//     // Add delete logic here
-//   };
-// }
+import axios from "axios";
 
 interface Post {
   id: number;
@@ -40,10 +30,10 @@ const SinglePost = () => {
 
   const { user } = useAuth() as { user: UserProfile };
 
-  const [post, setPost] = useState<Post | null>([]);
-  const [postAuthor, SetPostAuthor] = useState<UserProfile | null>([])
+  const [post, setPost] = useState<Post | null>(null);
+  const [postAuthor, SetPostAuthor] = useState<UserProfile | null>(null)
   
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
    const navigate = useNavigate();
@@ -54,7 +44,7 @@ const SinglePost = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
+        // setLoading(true);
         const postRes = await api.get(`/api/post/${numericPostId}/`);
         // console.log(postRes.data)
         setPost(postRes.data);
@@ -62,9 +52,18 @@ const SinglePost = () => {
         const authorRes = await api.get(`/api/user/${postRes.data.author_id}/`);
         SetPostAuthor(authorRes.data)
       } catch (err) {
-        setError(err.message || "Something went wrong.");
-      } finally {
-        setLoading(false);
+        if (axios.isAxiosError(err)) {
+        // TypeScript now knows `err` is an AxiosError
+        const apiError =
+          err.response?.data?.detail ||
+          (err.response?.data ? JSON.stringify(err.response.data) : null) ||
+          err.message;
+
+        setError(apiError);
+      } else {
+        // Handles non-Axios runtime errors (e.g., standard JS Errors)
+        setError("Network Error. Please try again");
+      }
       }
     };
     fetchData();
@@ -77,7 +76,7 @@ const SinglePost = () => {
     // setSuccess(false);
 
     try {
-      setLoading(true);
+      // setLoading(true);
       const response = await api.delete(`/api/post/delete/${numericPostId}/`);
 
       if (response.status === 204) {  // Django's DestroyAPIView returns a 204 No Content status on success
@@ -86,16 +85,19 @@ const SinglePost = () => {
       }
     } catch (err) {
       // Axios catches any response outside the 2xx range in the catch block
-      if (err.response && err.response.data) {
-        // Populates validation issues returned by Django REST Framework
-        setErrors(err.response.data);
-        console.error('Error deleting post:', err.response?.data || err.message);
+      if (axios.isAxiosError(err)) {
+        // TypeScript now knows `err` is an AxiosError
+        const apiError =
+          err.response?.data?.detail ||
+          (err.response?.data ? JSON.stringify(err.response.data) : null) ||
+          err.message;
+
+        setError(apiError);
       } else {
-        setErrors({ detail: "Network error. Please make sure your backend server is running." });
+        // Handles non-Axios runtime errors (e.g., standard JS Errors)
+        setError("Network Error. Please try again");
       }
     }
-
-
   };
 
   const isAuthor = user?.id === post?.author_id;
@@ -103,7 +105,7 @@ const SinglePost = () => {
   return (
     <>
       <Navbar />
-      <div className="mx-auto max-w-3xl px-4 py-6 md:py-12">
+       <div className="mx-auto max-w-3xl px-4 py-6 md:py-12">
         {/* Title and Actions Header */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-gray-900">
@@ -165,13 +167,10 @@ const SinglePost = () => {
 
 export default SinglePost;
 
-// Key Changes Made:
-// Layout & Width: container--narrow and py-md-5 were converted to a responsive wrapper using mx-auto max-w-3xl px-4 py-6 md:py-12.
 
-// Flexbox Alignment: d-flex justify-content-between became flex justify-between items-center to keep the icons and title vertically centered.
-
-// Spacing & Content: Instead of adding standard margins to every paragraph, space-y-4 was added to the body container wrapper to cleanly space out the text.
-
-// Icons: Replaced Font Awesome standard classes with lucide-react components (Pencil and Trash2), which play nicely with Tailwind's sizing utilities (w-5 h-5).
-
-// Avatar Styling: avatar-tiny was replaced with w-6 h-6 rounded-full.
+// {/* Optional Error Banner */}
+//         {error && (
+//           <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
+//             {error}
+//           </div>
+//         )}

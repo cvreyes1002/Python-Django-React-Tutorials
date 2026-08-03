@@ -44,12 +44,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-
-
-          // <a
-          //   className="bg-green-600 hover:bg-green-700 text-white text-sm py-1 px-3 rounded mr-2"
-          //   href="#"
-          // >
-          //   Create Post
-          // </a>

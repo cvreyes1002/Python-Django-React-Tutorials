@@ -2,24 +2,32 @@ import { Navigate, Outlet } from "react-router-dom"
 import { jwtDecode } from "jwt-decode"
 import api from "../api"
 import { REFRESH_TOKEN, ACCESS_TOKEN, USER_ID } from "../constants"
-import { useState, useEffect, type ReactNode, createContext, useContext } from "react"
-import axios from "axios"
+import { useState, useEffect, createContext, useContext } from "react"
 
-// interface ProtectedRouteProps {
-//   children: ReactNode
-// }
 
 // 1. Create the context container
-const AuthContext = createContext(null);
+// Define the shape of your context state
+interface AuthContextType {
+  user: any; // Replace 'any' with your User type/interface if available
+}
 
-// export function ProtectedRoute({ children }: ProtectedRouteProps) {
+// Pass the type union to createContext
+const AuthContext = createContext<AuthContextType | null>(null);
+
 export const ProtectedRoute = () => {
   const [user, setUser] = useState(null);
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 
+  // useEffect(() => {
+  //   auth().catch(() => setIsAuthorized(false))
+  // }, [isAuthorized])
+
+  // Avoid Perpetual useEffect Re-renders (as advised by Gemini)
+  // isAuthorized is listed as a dependency inside the useEffect, but the effect sets isAuthorized
+  // Remove isAuthorized from the dependency array so auth() only runs on initial mount
   useEffect(() => {
     auth().catch(() => setIsAuthorized(false))
-  }, [isAuthorized])
+  }, [])
 
   const refreshToken = async () => {
     const refreshToken = localStorage.getItem(REFRESH_TOKEN);

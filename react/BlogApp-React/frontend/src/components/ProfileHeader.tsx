@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../components/ProtectedRoute";
 import { Link } from "react-router";
 import api from "../api";
+import axios from "axios";
 
 interface UserProfile {
   id: number;
@@ -33,7 +34,11 @@ const ProfileHeader = ({ userId }: { userId: number }) => {
         const response = await api.get(`/api/profile/${userId}/`);
         setUserProfile(response.data);
       } catch (err) {
-        setError(err.message || "Something went wrong.");
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Something went wrong.");
+        }
       } finally {
         setLoading(false);
       }
@@ -49,7 +54,11 @@ const ProfileHeader = ({ userId }: { userId: number }) => {
         setIsFollowing(response.data.is_following);
         // console.log(response.data);
       } catch (err) {
-        setError(err.message || "Something went wrong.");
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Something went wrong.");
+        }
       } finally {
         setLoading(false);
       }
@@ -72,16 +81,19 @@ const ProfileHeader = ({ userId }: { userId: number }) => {
     const method = isFollowing ? "delete" : "post";
 
     try {
-      const response = await api[method](`/api/follow/${userId}/`);
-      // console.log(response.data);
+      await api[method](`/api/follow/${userId}/`);
       setIsFollowing(!isFollowing);
     } catch (err) {
-      // Axios stores API error responses under err.response
-      if (err.response && err.response.data) {
+      if (axios.isAxiosError(err)) {
+        // TypeScript now knows `err` is an AxiosError
         const apiError =
-          err.response.data.detail || JSON.stringify(err.response.data);
+          err.response?.data?.detail ||
+          (err.response?.data ? JSON.stringify(err.response.data) : null) ||
+          err.message;
+
         setError(apiError);
       } else {
+        // Handles non-Axios runtime errors (e.g., standard JS Errors)
         setError("Network Error. Please try again");
       }
       console.error("Follow error: ", err);

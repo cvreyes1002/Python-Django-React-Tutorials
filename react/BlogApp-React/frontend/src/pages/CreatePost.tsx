@@ -1,19 +1,19 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import api from "../api";
-
+import axios from "axios";
 
 const CreatePost = () => {
   const [formData, setFormData] = useState({
     title: "",
     content: ""
   });
-  const [errors, setErrors] = useState(null);
-  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState<string | null>(null);
+  // const [success, setSuccess] = useState(false)
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -21,27 +21,33 @@ const CreatePost = () => {
   };
 
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setErrors(null);
-    setSuccess(false);
+    setError(null);
+    // setSuccess(false);
 
     try {
       const response = await api.post("/api/create-post/", formData);
 
       if (response.status === 201) {
-        setSuccess(true);
+        // setSuccess(true);
         setFormData({ title: '', content: '' });  // Clear out the form fields on success
         navigate(`/post/${response.data.id}`)
       }
     } catch (err) {
       // Axios catches any response outside the 2xx range in the catch block
-      if (err.response && err.response.data) {
-        // Populates validation issues returned by Django REST Framework
-        setErrors(err.response.data);
+      if (axios.isAxiosError(err)) {
+        // TypeScript now knows `err` is an AxiosError
+        const apiError =
+          err.response?.data?.detail ||
+          (err.response?.data ? JSON.stringify(err.response.data) : null) ||
+          err.message;
+
+        setError(apiError);
       } else {
-        setErrors({ detail: "Network error. Please make sure your backend server is running." });
+        // Handles non-Axios runtime errors (e.g., standard JS Errors)
+        setError("Network Error. Please try again");
       }
     }
   };
@@ -49,6 +55,7 @@ const CreatePost = () => {
   return (
     <>
       <Navbar />
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <div className="container mx-auto max-w-2xl px-4 py-8 md:py-12">
         <form onSubmit={handleSubmit} className="space-y-6">
           

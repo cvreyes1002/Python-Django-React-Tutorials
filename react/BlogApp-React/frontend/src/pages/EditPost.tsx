@@ -1,16 +1,17 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import api from "../api";
 import Navbar from "../components/Navbar";
+import axios from "axios";
 
-interface Post {
-  id: number;
-  title: string;
-  content: string;
-  author_id: number;
-  // created_at: Date;
-}
+// interface Post {
+//   id: number;
+//   title: string;
+//   content: string;
+//   author_id: number;
+//   // created_at: Date;
+// }
 
 const EditPost = () => {
   const { postId } = useParams<{ postId: string }>();
@@ -19,61 +20,68 @@ const EditPost = () => {
 
   const [formData, setFormData] = useState({
     title: "",
-    content: ""
+    content: "",
   });
 
   const [loading, setLoading] = useState(true);
-  const [errors, setErrors] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState<string | null>(null);
+  // const [success, setSuccess] = useState(false)
 
   // const [post, setPost] = useState<Post | null>([]);
 
   // 1. Fetch the existing post data when the component mounts
-  useEffect( () => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const postRes = await api.get(`/api/post/${postId}/`);
         setFormData({
           title: postRes.data.title,
-          content: postRes.data.content
+          content: postRes.data.content,
         });
-        setLoading(false)
+        setLoading(false);
       } catch (err) {
-          setErrors({ detail: "Failed to load the post data." });
-          setLoading(false)
+        setError("Failed to load the post data.");
+        setLoading(false);
       }
     };
     fetchData();
   }, [postId]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setErrors(null);
-    setSuccess(false);
+    setError(null);
+    // setSuccess(false);
 
     try {
       // Send a PUT request to update the specific post
       const response = await api.put(`/api/post/${postId}/`, formData);
 
       if (response.status === 200 || response.status === 204) {
-        setSuccess(true);
-        navigate(`/post/${postId}`);  // Redirect to the view page
+        // setSuccess(true);
+        navigate(`/post/${postId}`); // Redirect to the view page
       }
     } catch (err) {
-      if (err.response && err.response.data) {
-        setErrors(err.response.data)
+      if (axios.isAxiosError(err)) {
+        // TypeScript now knows `err` is an AxiosError
+        const apiError =
+          err.response?.data?.detail ||
+          (err.response?.data ? JSON.stringify(err.response.data) : null) ||
+          err.message;
+
+        setError(apiError);
       } else {
-        setErrors({ detail: "Network error. Please make sure your backend server is running" });
+        // Handles non-Axios runtime errors (e.g., standard JS Errors)
+        setError("Network Error. Please try again");
       }
-    } 
-  }
+    }
+  };
 
   if (loading) {
     return (
@@ -87,19 +95,15 @@ const EditPost = () => {
     <>
       <Navbar />
       <div className="container mx-auto max-w-2xl px-4 py-8 md:py-12">
-        {/* Optional Error Banner */}
-        {errors && errors.detail && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
-            {errors.detail}
-          </div>
-        )}
-
         <h1 className="text-2xl font-bold mb-6 text-gray-800">Edit Post</h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Title Input */}
           <div className="flex flex-col">
-            <label htmlFor="post-title" className="text-gray-500 text-sm mb-1 font-medium">
+            <label
+              htmlFor="post-title"
+              className="text-gray-500 text-sm mb-1 font-medium"
+            >
               Title
             </label>
             <input
@@ -112,12 +116,15 @@ const EditPost = () => {
               autoComplete="off"
               className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
             />
-            {errors?.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
+            {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
           </div>
 
           {/* Body Textarea */}
           <div className="flex flex-col">
-            <label htmlFor="post-body" className="text-gray-500 text-sm mb-1 font-medium">
+            <label
+              htmlFor="post-body"
+              className="text-gray-500 text-sm mb-1 font-medium"
+            >
               Body Content
             </label>
             <textarea
@@ -130,7 +137,7 @@ const EditPost = () => {
               rows={8}
               className="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-y min-h-[200px]"
             />
-            {errors?.content && <p className="text-red-500 text-xs mt-1">{errors.content}</p>}
+            {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
           </div>
 
           {/* Buttons */}
@@ -152,16 +159,7 @@ const EditPost = () => {
         </form>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default EditPost
-
-
-          // <button
-          //   type="submit"
-          //   className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md shadow transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          // >
-          //   Save Changes
-          // </button>
-
+export default EditPost;
