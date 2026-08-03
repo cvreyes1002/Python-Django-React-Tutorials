@@ -31,13 +31,12 @@ const SinglePost = () => {
   const { user } = useAuth() as { user: UserProfile };
 
   const [post, setPost] = useState<Post | null>(null);
-  const [postAuthor, SetPostAuthor] = useState<UserProfile | null>(null)
-  
+  const [postAuthor, SetPostAuthor] = useState<UserProfile | null>(null);
+
   // const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-   const navigate = useNavigate();
-
+  const navigate = useNavigate();
 
   // const token = localStorage.getItem(ACCESS_TOKEN);
 
@@ -50,20 +49,20 @@ const SinglePost = () => {
         setPost(postRes.data);
 
         const authorRes = await api.get(`/api/user/${postRes.data.author_id}/`);
-        SetPostAuthor(authorRes.data)
+        SetPostAuthor(authorRes.data);
       } catch (err) {
         if (axios.isAxiosError(err)) {
-        // TypeScript now knows `err` is an AxiosError
-        const apiError =
-          err.response?.data?.detail ||
-          (err.response?.data ? JSON.stringify(err.response.data) : null) ||
-          err.message;
+          // TypeScript now knows `err` is an AxiosError
+          const apiError =
+            err.response?.data?.detail ||
+            (err.response?.data ? JSON.stringify(err.response.data) : null) ||
+            err.message;
 
-        setError(apiError);
-      } else {
-        // Handles non-Axios runtime errors (e.g., standard JS Errors)
-        setError("Network Error. Please try again");
-      }
+          setError(apiError);
+        } else {
+          // Handles non-Axios runtime errors (e.g., standard JS Errors)
+          setError("Network Error. Please try again");
+        }
       }
     };
     fetchData();
@@ -79,9 +78,10 @@ const SinglePost = () => {
       // setLoading(true);
       const response = await api.delete(`/api/post/delete/${numericPostId}/`);
 
-      if (response.status === 204) {  // Django's DestroyAPIView returns a 204 No Content status on success
-        console.log('Post deleted successfully!');
-        navigate(`/profile/${user.id}`)
+      if (response.status === 204) {
+        // Django's DestroyAPIView returns a 204 No Content status on success
+        console.log("Post deleted successfully!");
+        navigate(`/profile/${user.id}`);
       }
     } catch (err) {
       // Axios catches any response outside the 2xx range in the catch block
@@ -105,12 +105,11 @@ const SinglePost = () => {
   return (
     <>
       <Navbar />
-       <div className="mx-auto max-w-3xl px-4 py-6 md:py-12">
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <div className="mx-auto max-w-3xl px-4 py-6 md:py-12">
         {/* Title and Actions Header */}
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-gray-900">
-            {post?.title}
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900">{post?.title}</h2>
           {isAuthor && (
             <div className="flex items-center gap-3">
               {/* Edit Button */}
@@ -133,7 +132,7 @@ const SinglePost = () => {
                 </button>
               </form>
             </div>
-            )}
+          )}
         </div>
 
         {/* Author and Date Meta Info */}
@@ -148,17 +147,17 @@ const SinglePost = () => {
           <span>
             Posted by{" "}
             <a href="#" className="text-blue-600 hover:underline">
-              {isAuthor ? `${user.first_name} ${user.last_name}` : `${postAuthor?.first_name} ${postAuthor?.last_name}`}
+              {isAuthor
+                ? `${user.first_name} ${user.last_name}`
+                : `${postAuthor?.first_name} ${postAuthor?.last_name}`}
             </a>{" "}
-            {`on ${post?.created_at && format(new Date(post.created_at), 'MM/dd/yyy')}`}
+            {`on ${post?.created_at && format(new Date(post.created_at), "MM/dd/yyy")}`}
           </span>
         </div>
 
         {/* Post Body Content */}
         <div className="space-y-4 text-gray-700 leading-relaxed">
-          <p>
-            {post?.content}
-          </p>
+          <p>{post?.content}</p>
         </div>
       </div>
     </>
@@ -166,7 +165,6 @@ const SinglePost = () => {
 };
 
 export default SinglePost;
-
 
 // {/* Optional Error Banner */}
 //         {error && (
