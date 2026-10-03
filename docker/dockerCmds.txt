@@ -21,3 +21,34 @@ docker stop <container_id_or_name>
 
 # Delete a container
 docker rm <container_id_or_name>
+
+
+# Linux commands inside a container
+docker exec -it [container-name] [cmd]
+    ex: docker exec -it eams-php-app ls -alh /var/www/html
+
+
+
+docker run --name my-mysql-server \
+  -e MYSQL_ROOT_PASSWORD=password \
+  -p 3306:3306 \
+  -d mysql:latest
+
+
+
+
+Docker Compose (docker-compose.yml)
+See "eams-php-app" as a sample.
+
+# Check the configuration syntax is valid
+docker compose config
+
+# Build the image and start both containers
+docker compose up -d --build
+
+
+docker compose exec mysql mysql -u root -p'password' -e "CREATE DATABASE attendance_system;"
+
+docker compose exec -T mysql mysql -u root -p'password' attendance_system < attendance_system.sql
+
+docker compose exec -T mysql mysql -u root -p'password' attendance_system < sample_data.sql
