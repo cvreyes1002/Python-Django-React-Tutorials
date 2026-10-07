@@ -1,0 +1,18 @@
+# Check the configuration syntax is valid
+docker compose config
+
+# Build the image and start containers
+docker compose up -d --build
+
+# Bring down the containers and clear old volumes
+docker compose down -v
+
+# Start the container again
+docker compose up -d
+
+# Import Manually into a running container
+# Copy the files into the container
+docker cp [your-file.sql] my-mysql-server:/tmp/backup.sql
+
+# Import it
+docker exec -it my-mysql-server mysql -u root -ppassword attendance_system -e "SOURCE /tmp/backup.sql;"

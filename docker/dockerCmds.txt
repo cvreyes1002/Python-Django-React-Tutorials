@@ -43,7 +43,7 @@ See "eams-php-app" as a sample.
 # Check the configuration syntax is valid
 docker compose config
 
-# Build the image and start both containers
+# Build the image and start containers
 docker compose up -d --build
 
 

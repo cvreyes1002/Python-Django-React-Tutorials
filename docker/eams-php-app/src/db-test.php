@@ -2,7 +2,7 @@
 $host = 'mysql';
 $username = 'root';
 $password = 'password';
-$database = 'my_app_db';
+$database = 'attendance_system';
 
 $conn = new mysqli($host, $username, $password, $database);
 
